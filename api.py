@@ -64,8 +64,24 @@ def update_employee(id):
         return str(e)
 
 
-
 #DELETE
+#Eksempel på delete for nu i powershell
+#Invoke-WebRequest -Uri "http://127.0.0.1:5050/delete/102" -Method DELETE
+@api.route("/delete/<int:id>", methods=["DELETE"])
+def delete_employee(id):
+    query ="""
+    MATCH (e:Employee {ID: $id})
+    DELETE e
+"""
+    try:
+        result = session.run(query, parameters={"id": id})
+        if result.summary().counters.nodes_deleted > 0:
+            return f"Employee with ID={id} deleted successfully"
+        else:
+            return f"No Employee found with ID={id}"
+    except Exception as e:
+        return str(e)
+    
 
 if __name__=="__main__":
     api.run(port=5050)
