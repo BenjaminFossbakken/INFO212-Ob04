@@ -27,6 +27,14 @@ def create_node(name, id):
     except Exception as e:
         return (str(e))
 
+@api.route("/display", methods=["GET", "POST"])
+def display_node():
+    q1="""
+    match (n) return n.NAME as NAME ,n.ID as ID
+    """
+    results=session.run(q1)
+    data=results.data()
+    return(jsonify(data))
 
 if __name__=="__main__":
     api.run(port=5050)
