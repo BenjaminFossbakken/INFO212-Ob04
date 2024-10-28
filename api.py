@@ -39,6 +39,31 @@ def display_node():
     return(jsonify(data))
 
 #UPDATE
+#Eksempel på at update for nu, bruges i powershell
+#Invoke-WebRequest -Uri "http://127.0.0.1:5050/update/100" -Method POST -Body '{"name": "Ben", "address": "test2", "branch": "test2"}' -ContentType "application/json"
+@api.route("/update/<int:id>", methods=["POST"])
+def update_employee(id):
+    name = request.json.get("name")
+    address = request.json.get("address")
+    branch = request.json.get("branch")
+
+    q1 = """
+    MATCH (e:Employee {ID: $id})
+    SET e.NAME = $name, e.ADDRESS = $address, e.BRANCH = $branch
+    RETURN e
+    """
+
+    map = {"id": id, "name": name, "address": address, "branch": branch}
+    try:
+        result = session.run(q1, parameters=map)
+        if result.single():
+            return f"Employee with ID={id} updated successfully"
+        else:
+            return f"No Employee found with ID={id}"
+    except Exception as e:
+        return str(e)
+
+
 
 #DELETE
 
