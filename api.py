@@ -70,7 +70,7 @@ def update_employee(id):
 def delete_employee(id):
     query ="""
     MATCH (e:Employee {ID: $id})
-    DELETE e
+    DETACH DELETE e
 """
     try:
         result = session.run(query, parameters={"id": id})
@@ -83,31 +83,161 @@ def delete_employee(id):
     
 
 # Car CRUD
-@api.route("/car/create/<string:make>&<string:model>&<int:year>&<string:location>&<string:status>", methods=["POST"])
-def create_car(make, model, year, location, status):
+@api.route("/car/create/<string:make>&<string:model>&<int:year>&<string:location>&<string:status>&<int:id>", methods=["POST"])
+def create_car(make, model, year, location, status, id):
     q1 = """
-    CREATE (c:Car {MAKE: $make, MODEL: $model, YEAR: $year, LOCATION: $location, STATUS: $status})
+    CREATE (c:Car {MAKE: $make, MODEL: $model, YEAR: $year, LOCATION: $location, STATUS: $status, ID: $id})
     """
-    map = {"make": make, "model": model, "year": year, "location": location, "status": status}
+    map = {"make": make, "model": model, "year": year, "location": location, "status": status, "id": id}
     try:
         session.run(q1, parameters=map)
-        return f"Car created with Make={make}, Model={model}, Year={year}, Location={location}, Status={status}"
+        return f"Car created with Make={make}, Model={model}, Year={year}, Location={location}, Status={status}, ID={id}"
     except Exception as e:
         return str(e)
     
-
-# Customer CRUD
-@api.route("/customer/create/<string:name>&<int:age>&<string:address>", methods=["POST"])
-def create_customer(name, age, address):
-    query = """
-    CREATE (cust:Customer {NAME: $name, AGE: $age, ADDRESS: $address})
+#READ
+@api.route("/cars/", methods=["GET"])
+def display_cars():
+    q1="""
+    MATCH (c:Car) RETURN c.MAKE AS make, c.MODEL AS model, c.YEAR AS year, c.LOCATION as location, c.STATUS as status, c.ID as id
     """
-    parameters = {"name": name, "age": age, "address": address}
+    results=session.run(q1)
+    data=results.data()
+    return(jsonify(data))
+
+
+@api.route("/car/update/<int:id>", methods=["POST"])
+def update_car(id):
+    make = request.json.get("make")
+    model = request.json.get("model")
+    year = request.json.get("year")
+    location = request.json.get("location")
+    status = request.json.get("status")
+
+    q1 = """
+    MATCH (c:Car {ID: $id})
+    SET c.MAKE = $make, c.MODEL = $model, c.YEAR = $year, c.LOCATION = $location, c.STATUS = $status
+    RETURN c
+    """
+
+    map = {"id": id,"make": make, "model": model, "year": year, "location": location, "status": status}
     try:
-        session.run(query, parameters=parameters)
-        return f"Customer created with Name={name}, Age={age}, Address={address}"
+        result = session.run(q1, parameters=map)
+        if result.single():
+            return f"Car with ID={id} updated successfully"
+        else:
+            return f"No Car found with ID={id}"
     except Exception as e:
         return str(e)
+    
+@api.route("/car/delete/<int:id>", methods=["DELETE"])
+def delete_car(id):
+    query = """
+    MATCH (c:Car {ID: $id})
+    DETACH DELETE c
+    """
+    try:
+        result = session.run(query, parameters={"id": id})
+        if result.summary().counters.nodes_deleted > 0:
+            return f"Car with ID={id} deleted successfully"
+        else:
+            return f"No Car found with ID={id}"
+    except Exception as e:
+        return str(e)
+
+
+# Customer CRUD
+@api.route("/customer/create/<string:name>&<int:age>&<string:address>&<int:id>", methods=["POST"])
+def create_customer(name, age, address, id):
+    q1 = """
+    CREATE (cust:Customer {NAME: $name, AGE: $age, ADDRESS: $address, ID: $id})
+    """
+    map = {"name": name, "age": age, "address": address, "id": id}
+    try:
+        session.run(q1, parameters=map)
+        return f"Customer created with Name={name}, Age={age}, Address={address}, ID={id}"
+    except Exception as e:
+        return str(e)
+
+@api.route("/customers/", methods=["GET"])
+def display_customers():
+    q1="""
+    MATCH (cust:Customer) RETURN cust.NAME AS name, cust.AGE AS age, cust.ADDRESS AS address, cust.ID AS id
+    """
+    results=session.run(q1)
+    data=results.data()
+    return(jsonify(data))
+
+
+@api.route("/customer/update/<int:id>", methods=["POST"])
+def update_customer(id):
+    name = request.json.get("name")
+    address = request.json.get("address")
+    age = request.json.get("age")
+
+    q1 = """
+    MATCH (cust:Customer {ID: $id})
+    SET cust.NAME = $name, cust.ADDRESS = $address, cust.age = $age
+    RETURN cust
+    """
+    map = {"name": name, "age": age, "address": address, "id": id}
+    try:
+        result = session.run(q1, parameters=map)
+        if result.single():
+            return f"Customer with ID={id} updated successfully"
+        else:
+            return f"No Customer found with ID={id}"
+    except Exception as e:
+        return str(e)
+
+@api.route("/customer/delete/<int:id>", methods=["DELETE"])
+def delete_customer(id):
+    query ="""
+    MATCH (cust:Customer {ID: $id})
+    DETACH DELETE cust
+"""
+    try:
+        result = session.run(query, parameters={"id": id})
+        if result.summary().counters.nodes_deleted > 0:
+            return f"Customer with ID={id} deleted successfully"
+        else:
+            return f"No Customer found with ID={id}"
+    except Exception as e:
+        return str(e)
+
+
+
+
+
+
+
+
+
+@api.route("/order-car/<int:customer_id>&<int:car_id>", methods=["POST"])
+def order_car(customer_id, car_id):
+    check_car_query = """
+    MATCH (c:Car {ID: $car_id})
+    RETURN c.STATUS AS status
+    """
+    car_status = session.run(check_car_query, parameters={"car_id": car_id}).single()
+
+    if car_status and car_status["status"] in ["available", "booked"]:
+        order_query = """
+        MATCH (cust:Customer {ID: $customer_id}), (c:Car {ID: $car_id})
+        CREATE (cust)-[:RENTED]->(c)
+        SET c.STATUS = 'rented'
+        RETURN c
+        """
+        try:
+            session.run(order_query, parameters={"customer_id": customer_id, "car_id": car_id})
+            return f"Customer {customer_id} successfully rented Car {car_id}"
+        except Exception as e:
+            return str(e)
+    elif car_status:
+        return f"Car {car_id} is not available for rent."
+    else:
+        return f"Car {car_id} not found."
+
 
 
 if __name__=="__main__":
