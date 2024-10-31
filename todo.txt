@@ -1,8 +1,0 @@
-car node skal være 'available' -> 'booked' -> 'rented' -> 'available'
-
-
-mangler endpoints:
-order-car
-cancel-order-car
-rent-car
-return-car
