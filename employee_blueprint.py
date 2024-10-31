@@ -1,12 +1,18 @@
 from flask import Blueprint, jsonify, request
-from neo4j import GraphDatabase
 from db import session
 
-# Opret Blueprint
 employee_bp = Blueprint('employee', __name__)
 
+#CREATE
 @employee_bp.route("/employee/create/<string:name>&<int:id>&<string:address>&<string:branch>",methods=["POST"])
 def create_node(name, id, address, branch):
+    check_id_query = """
+    MATCH (c:Car {ID: $id})
+    RETURN c.ID AS id
+    """
+    while session.run(check_id_query, parameters={"id": id}).single():
+        id += 1 
+
     q1="""
     CREATE (e:Employee{NAME:$name, ID:$id, ADDRESS: $address, BRANCH: $branch})
     """
