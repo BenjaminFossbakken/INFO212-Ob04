@@ -6,12 +6,14 @@ car_bp = Blueprint('car', __name__)
 #CREATE
 @car_bp.route("/car/create/<string:make>&<string:model>&<int:year>&<string:location>&<string:status>&<int:id>", methods=["POST"])
 def create_car(make, model, year, location, status, id):
+    #Matches id, if id exists +1 is added until id is unique
     check_id_query = """
     MATCH (c:Car {ID: $id})
     RETURN c.ID AS id
     """
     while session.run(check_id_query, parameters={"id": id}).single():
         id += 1 
+    #Creates node with given parameters
     q1 = """
     CREATE (c:Car {MAKE: $make, MODEL: $model, YEAR: $year, LOCATION: $location, STATUS: $status, ID: $id})
     """
@@ -25,9 +27,11 @@ def create_car(make, model, year, location, status, id):
 #READ
 @car_bp.route("/cars/", methods=["GET"])
 def display_cars():
+    #Match all employee nodes
     q1="""
     MATCH (c:Car) RETURN c.MAKE AS make, c.MODEL AS model, c.YEAR AS year, c.LOCATION as location, c.STATUS as status, c.ID as id
     """
+    #Return data in json format
     results=session.run(q1)
     data=results.data()
     return(jsonify(data))
@@ -35,12 +39,14 @@ def display_cars():
 #UPDATE
 @car_bp.route("/car/update/<int:id>", methods=["POST"])
 def update_car(id):
+    #Extract parameters
     make = request.json.get("make")
     model = request.json.get("model")
     year = request.json.get("year")
     location = request.json.get("location")
     status = request.json.get("status")
 
+    #Match an employee by id and updates it
     q1 = """
     MATCH (c:Car {ID: $id})
     SET c.MAKE = $make, c.MODEL = $model, c.YEAR = $year, c.LOCATION = $location, c.STATUS = $status
@@ -59,6 +65,7 @@ def update_car(id):
     
 @car_bp.route("/car/delete/<int:id>", methods=["DELETE"])
 def delete_car(id):
+    #Match id and detach, delete
     q1 = """
     MATCH (c:Car {ID: $id})
     DETACH DELETE c

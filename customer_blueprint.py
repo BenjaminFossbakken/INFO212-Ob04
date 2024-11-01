@@ -6,6 +6,7 @@ customer_bp = Blueprint('customer', __name__)
 #CREATE
 @customer_bp.route("/customer/create/<string:name>&<int:age>&<string:address>&<int:id>", methods=["POST"])
 def create_customer(name, age, address, id):
+    #Matches id, if id exists +1 is added until id is unique
     check_id_query = """
     MATCH (cust:Customer {ID: $id})
     RETURN cust.ID AS id
