@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request, redirect, render_template
+from flask import Flask
 from employee_blueprint import employee_bp
 from car_blueprint import car_bp
 from customer_blueprint import customer_bp
@@ -13,6 +13,16 @@ api.register_blueprint(customer_bp)
 ###ORDER-CAR END-POINT###
 @api.route("/order-car/<int:customer_id>&<int:car_id>", methods=["POST"])
 def order_car(customer_id, car_id):
+    #Tjekker først om id'erne eksisterer
+    existence_query = """
+    MATCH (cust:Customer {ID: $customer_id}), (car:Car {ID: $car_id})
+    RETURN cust, car
+    """
+    existence_result = session.run(existence_query, parameters={"customer_id": customer_id, "car_id": car_id}).single()
+
+    if not existence_result:
+        return f"Either customer with ID={customer_id} or car with ID={car_id} does not exist.", 400
+    
     #Tejkker om kunden har booket en bil i forvejen
     check_booking_query = """
     MATCH (cust:Customer {ID: $customer_id})-[:BOOKED]->(car:Car)
