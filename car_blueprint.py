@@ -3,7 +3,6 @@ from db import session
 
 car_bp = Blueprint('car', __name__)
 
-
 #CREATE
 @car_bp.route("/car/create/<string:make>&<string:model>&<int:year>&<string:location>&<string:status>&<int:id>", methods=["POST"])
 def create_car(make, model, year, location, status, id):
@@ -13,7 +12,6 @@ def create_car(make, model, year, location, status, id):
     """
     while session.run(check_id_query, parameters={"id": id}).single():
         id += 1 
-
     q1 = """
     CREATE (c:Car {MAKE: $make, MODEL: $model, YEAR: $year, LOCATION: $location, STATUS: $status, ID: $id})
     """
@@ -55,7 +53,7 @@ def update_car(id):
         if result.single():
             return f"Car with ID={id} updated successfully"
         else:
-            return f"No Car found with ID={id}"
+            return f"No car found with ID={id}"
     except Exception as e:
         return str(e)
     
@@ -70,6 +68,6 @@ def delete_car(id):
         if result.summary().counters.nodes_deleted > 0:
             return f"Car with ID={id} deleted successfully"
         else:
-            return f"No Car found with ID={id}"
+            return f"No car found with ID={id}"
     except Exception as e:
         return str(e)

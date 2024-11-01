@@ -1,0 +1,3 @@
+https://www.youtube.com/watch?v=5_14rZceISE&t=1220s
+https://flask-api.github.io/flask-api/api-guide/status-codes/
+https://realpython.com/flask-blueprint/

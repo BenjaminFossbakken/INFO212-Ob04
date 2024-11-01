@@ -10,6 +10,9 @@ api.register_blueprint(employee_bp)
 api.register_blueprint(car_bp)
 api.register_blueprint(customer_bp)
 
+#Error 400 for bad request
+#Error 500 for internal server error
+
 ###ORDER-CAR END-POINT###
 @api.route("/order-car/<int:customer_id>&<int:car_id>", methods=["POST"])
 def order_car(customer_id, car_id):
@@ -32,7 +35,7 @@ def order_car(customer_id, car_id):
 
     #Hvis ja, så kan de ikke booke igen og får fejlmelding
     if booked_car:
-        return f"Customer with ID={customer_id} already has a booking for Car with ID={booked_car['car_id']}", 400
+        return f"Customer with ID={customer_id} already has a booking for car with ID={booked_car['car_id']}", 400
 
     #Tjekker derefter om bilens status, hvis status ikke er = "available" -> fejlmelding
     check_car_status_query = """
@@ -79,7 +82,7 @@ def cancel_order_car(customer_id, car_id):
     """
     try:
         session.run(cancel_booking_query, parameters={"customer_id": customer_id, "car_id": car_id})
-        return f"Booking for Car with ID={car_id} by Customer with ID={customer_id} has been cancelled. The car is now available."
+        return f"Booking for car with ID={car_id} by customer with ID={customer_id} has been cancelled."
     except Exception as e:
         return str(e), 500
 

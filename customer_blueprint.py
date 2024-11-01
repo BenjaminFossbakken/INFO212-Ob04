@@ -50,7 +50,7 @@ def update_customer(id):
         if result.single():
             return f"Customer with ID={id} updated successfully"
         else:
-            return f"No Customer found with ID={id}"
+            return f"No customer found with ID={id}"
     except Exception as e:
         return str(e)
 
@@ -66,7 +66,7 @@ def delete_customer(id):
         if result.summary().counters.nodes_deleted > 0:
             return f"Customer with ID={id} deleted successfully"
         else:
-            return f"No Customer found with ID={id}"
+            return f"No customer found with ID={id}"
     except Exception as e:
         return str(e)
 

@@ -34,8 +34,6 @@ def display_node():
     return(jsonify(data))
 
 #UPDATE
-#Eksempel på at update for nu, bruges i powershell
-#Invoke-WebRequest -Uri "http://127.0.0.1:5050/update/100" -Method POST -Body '{"name": "Ben", "address": "test2", "branch": "test2"}' -ContentType "application/json"
 @employee_bp.route("/employee/update/<int:id>", methods=["POST"])
 def update_employee(id):
     name = request.json.get("name")
@@ -54,13 +52,11 @@ def update_employee(id):
         if result.single():
             return f"Employee with ID={id} updated successfully"
         else:
-            return f"No Employee found with ID={id}"
+            return f"No employee found with ID={id}"
     except Exception as e:
         return str(e)
 
 #DELETE
-#Eksempel på delete for nu i powershell, senere postman
-#Invoke-WebRequest -Uri "http://127.0.0.1:5050/delete/102" -Method DELETE
 @employee_bp.route("/employee/delete/<int:id>", methods=["DELETE"])
 def delete_employee(id):
     query ="""
@@ -72,7 +68,7 @@ def delete_employee(id):
         if result.summary().counters.nodes_deleted > 0:
             return f"Employee with ID={id} deleted successfully"
         else:
-            return f"No Employee found with ID={id}"
+            return f"No employee found with ID={id}"
     except Exception as e:
         return str(e)
     
