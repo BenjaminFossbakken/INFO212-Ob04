@@ -12,7 +12,8 @@ def create_customer(name, age, address, id):
     RETURN cust.ID AS id
     """
     while session.run(check_id_query, parameters={"id": id}).single():
-        id += 1 
+        id += 1
+    #Creates node with given parameters
     q1 = """
     CREATE (cust:Customer {NAME: $name, AGE: $age, ADDRESS: $address, ID: $id})
     """
@@ -26,9 +27,11 @@ def create_customer(name, age, address, id):
 #READ
 @customer_bp.route("/customers/", methods=["GET"])
 def display_customers():
+    #Match all employee nodes
     q1="""
     MATCH (cust:Customer) RETURN cust.NAME AS name, cust.AGE AS age, cust.ADDRESS AS address, cust.ID AS id
     """
+    #Return data in json format
     results=session.run(q1)
     data=results.data()
     return(jsonify(data))
@@ -36,10 +39,12 @@ def display_customers():
 #UPDATE
 @customer_bp.route("/customer/update/<int:id>", methods=["POST"])
 def update_customer(id):
+    #Extract parameters
     name = request.json.get("name")
     address = request.json.get("address")
     age = request.json.get("age")
 
+    #Match an employee by id and updates it
     q1 = """
     MATCH (cust:Customer {ID: $id})
     SET cust.NAME = $name, cust.ADDRESS = $address, cust.age = $age
@@ -58,6 +63,7 @@ def update_customer(id):
 #DELETE
 @customer_bp.route("/customer/delete/<int:id>", methods=["DELETE"])
 def delete_customer(id):
+    #Match id and detach, delete
     q1 ="""
     MATCH (cust:Customer {ID: $id})
     DETACH DELETE cust
