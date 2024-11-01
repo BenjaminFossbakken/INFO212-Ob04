@@ -8,11 +8,9 @@ To check the database is working as intended, I would recommend creating car, cu
 For your convenience, I have put examples of the other CRUD commands in the pdf file with pictures.
 
 ### Start up:
-Open new terminal.
-
-Write 'python api.py'
-
-The link provided should say "* Running on http://127.0.0.1:5050".
+1. Open new terminal.
+2. Write 'python api.py'
+3. The link provided should say "* Running on http://127.0.0.1:5050".
 
 ### Open postman:
 1. In the url form put: http://127.0.0.1:5050.
