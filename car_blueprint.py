@@ -59,12 +59,12 @@ def update_car(id):
     
 @car_bp.route("/car/delete/<int:id>", methods=["DELETE"])
 def delete_car(id):
-    query = """
+    q1 = """
     MATCH (c:Car {ID: $id})
     DETACH DELETE c
     """
     try:
-        result = session.run(query, parameters={"id": id})
+        result = session.run(q1, parameters={"id": id})
         if result.summary().counters.nodes_deleted > 0:
             return f"Car with ID={id} deleted successfully"
         else:

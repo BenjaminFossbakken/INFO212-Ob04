@@ -7,8 +7,8 @@ customer_bp = Blueprint('customer', __name__)
 @customer_bp.route("/customer/create/<string:name>&<int:age>&<string:address>&<int:id>", methods=["POST"])
 def create_customer(name, age, address, id):
     check_id_query = """
-    MATCH (c:Car {ID: $id})
-    RETURN c.ID AS id
+    MATCH (cust:Customer {ID: $id})
+    RETURN cust.ID AS id
     """
     while session.run(check_id_query, parameters={"id": id}).single():
         id += 1 
@@ -57,12 +57,12 @@ def update_customer(id):
 #DELETE
 @customer_bp.route("/customer/delete/<int:id>", methods=["DELETE"])
 def delete_customer(id):
-    query ="""
+    q1 ="""
     MATCH (cust:Customer {ID: $id})
     DETACH DELETE cust
-"""
+    """
     try:
-        result = session.run(query, parameters={"id": id})
+        result = session.run(q1, parameters={"id": id})
         if result.summary().counters.nodes_deleted > 0:
             return f"Customer with ID={id} deleted successfully"
         else:
