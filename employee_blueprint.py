@@ -6,20 +6,21 @@ employee_bp = Blueprint('employee', __name__)
 #CREATE
 @employee_bp.route("/employee/create/<string:name>&<int:id>&<string:address>&<string:branch>",methods=["POST"])
 def create_employee(name, id, address, branch):
+    #Checks id, if id exists +1 is added until id is unique
     check_id_query = """
     MATCH (e:Employee {ID: $id})
     RETURN e.ID AS id
     """
     while session.run(check_id_query, parameters={"id": id}).single():
         id += 1 
-
+    #Creates node with given parameters
     q1="""
     CREATE (e:Employee{NAME:$name, ID:$id, ADDRESS: $address, BRANCH: $branch})
     """
     map={"name": name, "id": id, "address": address, "branch": branch}
     try:
         session.run(q1, parameters=map)
-        return (f"Employee node is created with employee name={name} and id={id}, Address={address}, Branch={branch}")
+        return (f"Employee node is created with employee Name={name}, ID={id}, Address={address}, Branch={branch}")
     except Exception as e:
         return (str(e))
 

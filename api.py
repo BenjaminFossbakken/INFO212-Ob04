@@ -10,13 +10,10 @@ api.register_blueprint(employee_bp)
 api.register_blueprint(car_bp)
 api.register_blueprint(customer_bp)
 
-#Error 400 for bad request
-#Error 500 for internal server error
-
 ###ORDER-CAR END-POINT###
 @api.route("/order-car/<int:customer_id>&<int:car_id>", methods=["POST"])
 def order_car(customer_id, car_id):
-    #Tjekker først om id'erne eksisterer
+    #Checks if the id's exist
     existence_query = """
     MATCH (cust:Customer {ID: $customer_id}), (car:Car {ID: $car_id})
     RETURN cust, car
@@ -26,18 +23,18 @@ def order_car(customer_id, car_id):
     if not existence_result:
         return f"Either customer with ID={customer_id} or car with ID={car_id} does not exist."
     
-    #Tejkker om kunden har booket en bil i forvejen
+    #Checks if the customer has booked a car already
     check_booking_query = """
     MATCH (cust:Customer {ID: $customer_id})-[:BOOKED]->(car:Car)
     RETURN car.ID AS car_id
     """
     booked_car = session.run(check_booking_query, parameters={"customer_id": customer_id}).single()
 
-    #Hvis ja, så kan de ikke booke igen og får fejlmelding
+    #If yes, then they can not book again the receive an error message
     if booked_car:
         return f"Customer with ID={customer_id} already has a booking for car with ID={booked_car['car_id']}"
 
-    #Tjekker derefter om bilens status, hvis status ikke er = "available" -> fejlmelding
+    #Then checks the status of the car, if the statis is not 'available', they receive error message
     check_car_status_query = """
     MATCH (car:Car {ID: $car_id})
     RETURN car.STATUS AS status
@@ -47,7 +44,7 @@ def order_car(customer_id, car_id):
     if car_status and car_status["status"] != "available":
         return f"Car with ID={car_id} is currently not available for booking"
 
-    #Laver booking relationship og opdaterer bilens status til 'booked'
+    #Creates a booking relationship and updates the car's status to 'booked'
     order_query = """
     MATCH (cust:Customer {ID: $customer_id}), (car:Car {ID: $car_id})
     CREATE (cust)-[:BOOKED]->(car)
@@ -63,7 +60,7 @@ def order_car(customer_id, car_id):
 ###CANCEL-ORDER END-POINT###
 @api.route("/cancel-order-car/<int:customer_id>&<int:car_id>", methods=["POST"])
 def cancel_order_car(customer_id, car_id):
-    #Tjekker relationship mellem customer og bil
+    #Checks relationship between customer node and car node
     check_booking_query = """
     MATCH (cust:Customer {ID: $customer_id})-[:BOOKED]->(car:Car {ID: $car_id})
     RETURN car.ID AS car_id
@@ -73,7 +70,7 @@ def cancel_order_car(customer_id, car_id):
     if not booking:
         return f"Customer with ID={customer_id} does not have a booking for Car with ID={car_id}"
 
-    #Hvis relationship er booked, DELETE r og set bilens status tilbage til 'available'
+    #If the relationship is 'booked', DELETE it and set the car's status back to 'available'
     cancel_booking_query = """
     MATCH (cust:Customer {ID: $customer_id})-[r:BOOKED]->(car:Car {ID: $car_id})
     DELETE r
@@ -89,18 +86,18 @@ def cancel_order_car(customer_id, car_id):
 ###RENT END-POINT###
 @api.route("/rent-car/<int:customer_id>&<int:car_id>", methods=["POST"])
 def rent_car(customer_id, car_id):
-    #Tjekker relationship mellem ids
+    #Checks relationship between ids
     check_query = """
     MATCH (cust:Customer {ID: $customer_id})-[:BOOKED]->(car:Car {ID: $car_id})
     WHERE car.STATUS = 'booked'
     RETURN car.ID AS car_id
     """
     booking = session.run(check_query, parameters={"customer_id": customer_id, "car_id": car_id}).single()
-    #error message
+    #Error message
     if not booking:
         return f"Customer with ID={customer_id} does not have a booking for car with ID={car_id} or the car is not in 'booked' status."
     
-    #fjerner booked relationship og laver rented relationship
+    #Deletes 'booked' relationship and creates a 'rented' relationship
     rent_query = """
     MATCH (cust:Customer {ID: $customer_id})-[r:BOOKED]->(car:Car {ID: $car_id})
     DELETE r
@@ -117,7 +114,7 @@ def rent_car(customer_id, car_id):
 ###RETURN END-POINT###
 @api.route("/return-car/<int:customer_id>&<int:car_id>&<string:status>", methods=["POST"])
 def return_car(customer_id, car_id, status):
-    #tjekker om der er et rented relationship
+    #Checks if there is a 'rented' relationship between the two chosen ids
     check_query = """
     MATCH (cust:Customer {ID: $customer_id})-[:RENTED]->(car:Car {ID: $car_id})
     RETURN car.ID AS car_id
@@ -127,10 +124,10 @@ def return_car(customer_id, car_id, status):
     if not rented_car:
         return f"Customer with ID={customer_id} has not rented car with ID={car_id}."
 
-    #setter status tilbage til available hvis den bilen ikke er damaged
+    #Sets status back to available if the car is not damaged
     final_status = "available" if status == "ok" else "damaged"
 
-    #afhængigt af om den er ok eller damaged bliver den set til den status
+    #Depending on whether the car is ok or damaged, the status is set to either available or damaged
     return_query = """
     MATCH (cust:Customer {ID: $customer_id})-[r:RENTED]->(car:Car {ID: $car_id})
     DELETE r

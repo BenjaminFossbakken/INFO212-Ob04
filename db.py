@@ -9,6 +9,6 @@ with open("cred.txt") as f1:
         pwd = row[1]
         uri = row[2]
 
-#driver og session
+#Driver and session
 driver = GraphDatabase.driver(uri=uri, auth=(username, pwd))
 session = driver.session()
