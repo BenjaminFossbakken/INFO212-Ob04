@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Login</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Customer Login</h1>
+
+        <!-- Login Form -->
+        <form id="loginForm">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" required>
+            <label for="password">Password:</label>
+            <input type="text" id="password" name="password" required>
+            <button type="button" onclick="loginCustomer()">Login</button>
+        </form>
+
+        <p>Don't have an account?</p>
+        <button onclick="location.href='/customer_register'">Create Account</button>
+
+        <div id="response"></div>
+    </div>
+
+    <script>
+        function loginCustomer() {
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
+
+            fetch('/customer_login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password })
+            })
+            .then(response => {
+                if (response.ok) {
+                    // Hvis login er succesfuldt, omdiriger til kunde-dashboardet
+                    window.location.href = "/customer_page";
+                } else {
+                    return response.text().then(text => {
+                        document.getElementById("response").innerText = text;
+                    });
+                }
+            })
+            .catch(error => document.getElementById("response").innerText = error);
+        }
+    </script>
+</body>
+</html>

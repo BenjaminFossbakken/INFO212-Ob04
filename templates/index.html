@@ -3,19 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Car Rental Management</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>Login</title>
+    <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
     <div class="container index-container">
-        <h1>Car Rental Management</h1>
-        <p>Choose an entity to manage:</p>
+        <h1>Welcome to Car Rental System</h1>
+        <p>Please select your login type:</p>
         
-        <!-- Button links to each entity's management page -->
-        <button onclick="window.location.href='/employees_page'">Manage Employees</button>
-        <button onclick="window.location.href='/customers'">Manage Customers</button>
-        <button onclick="window.location.href='/cars'">Manage Cars</button>
-        <button onclick="window.location.href='/operations'">Operations</button>
+        <button onclick="location.href='/customer_login'">Customer</button>
+        <button onclick="location.href='/emp_home'">Employee</button>
     </div>
 </body>
 </html>
