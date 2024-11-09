@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Car Operations</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Car Rental Operations</h1>
+        <div class="forms-container">
+            <!-- Order Car -->
+            <div class="form-wrapper">
+                <h2>Order Car</h2>
+                <form id="orderForm">
+                    <label for="orderCustomerId">Customer ID:</label>
+                    <input type="number" id="orderCustomerId" name="customer_id" required>
+                    <label for="orderCarId">Car ID:</label>
+                    <input type="number" id="orderCarId" name="car_id" required>
+                    <button type="button" onclick="orderCar()">Order Car</button>
+                </form>
+            </div>
+
+            <!-- Cancel Order -->
+            <div class="form-wrapper">
+                <h2>Cancel Order</h2>
+                <form id="cancelForm">
+                    <label for="cancelCustomerId">Customer ID:</label>
+                    <input type="number" id="cancelCustomerId" name="customer_id" required>
+                    <label for="cancelCarId">Car ID:</label>
+                    <input type="number" id="cancelCarId" name="car_id" required>
+                    <button type="button" onclick="cancelOrder()">Cancel Order</button>
+                </form>
+            </div>
+
+            <!-- Rent Car -->
+            <div class="form-wrapper">
+                <h2>Rent Car</h2>
+                <form id="rentForm">
+                    <label for="rentCustomerId">Customer ID:</label>
+                    <input type="number" id="rentCustomerId" name="customer_id" required>
+                    <label for="rentCarId">Car ID:</label>
+                    <input type="number" id="rentCarId" name="car_id" required>
+                    <button type="button" onclick="rentCar()">Rent Car</button>
+                </form>
+            </div>
+
+            <!-- Return Car -->
+            <div class="form-wrapper">
+                <h2>Return Car</h2>
+                <form id="returnForm">
+                    <label for="returnCustomerId">Customer ID:</label>
+                    <input type="number" id="returnCustomerId" name="customer_id" required>
+                    <label for="returnCarId">Car ID:</label>
+                    <input type="number" id="returnCarId" name="car_id" required>
+                    <label for="returnStatus">Status (ok/damaged):</label>
+                    <input type="text" id="returnStatus" name="status" required>
+                    <button type="button" onclick="returnCar()">Return Car</button>
+                </form>
+            </div>
+        </div>
+        <div id="response"></div>
+    </div>
+
+    <script>
+        // JavaScript functions to handle each operation
+
+        function orderCar() {
+            const customerId = document.getElementById("orderCustomerId").value;
+            const carId = document.getElementById("orderCarId").value;
+
+            fetch(`/order-car/${customerId}&${carId}`, { method: "POST" })
+                .then(response => response.text())
+                .then(data => document.getElementById("response").innerText = data)
+                .catch(error => document.getElementById("response").innerText = error);
+        }
+
+        function cancelOrder() {
+            const customerId = document.getElementById("cancelCustomerId").value;
+            const carId = document.getElementById("cancelCarId").value;
+
+            fetch(`/cancel-order-car/${customerId}&${carId}`, { method: "POST" })
+                .then(response => response.text())
+                .then(data => document.getElementById("response").innerText = data)
+                .catch(error => document.getElementById("response").innerText = error);
+        }
+
+        function rentCar() {
+            const customerId = document.getElementById("rentCustomerId").value;
+            const carId = document.getElementById("rentCarId").value;
+
+            fetch(`/rent-car/${customerId}&${carId}`, { method: "POST" })
+                .then(response => response.text())
+                .then(data => document.getElementById("response").innerText = data)
+                .catch(error => document.getElementById("response").innerText = error);
+        }
+
+        function returnCar() {
+            const customerId = document.getElementById("returnCustomerId").value;
+            const carId = document.getElementById("returnCarId").value;
+            const status = document.getElementById("returnStatus").value;
+
+            fetch(`/return-car/${customerId}&${carId}&${status}`, { method: "POST" })
+                .then(response => response.text())
+                .then(data => document.getElementById("response").innerText = data)
+                .catch(error => document.getElementById("response").innerText = error);
+        }
+    </script>
+</body>
+</html>

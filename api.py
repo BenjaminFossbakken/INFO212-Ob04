@@ -1,14 +1,38 @@
-from flask import Flask
+from flask import Flask, render_template
 from employee_blueprint import employee_bp
 from car_blueprint import car_bp
 from customer_blueprint import customer_bp
 from db import session
 
-api=Flask(__name__)
+api = Flask(__name__)
 
+# Registrer Blueprints
 api.register_blueprint(employee_bp)
 api.register_blueprint(car_bp)
 api.register_blueprint(customer_bp)
+
+@api.route("/")
+def index_page():
+    return render_template("index.html")
+
+@api.route("/employees_page")
+def employee_page():
+    return render_template("employee.html")
+
+# Rute til at vise Customer-siden
+@api.route("/customers")
+def customer_page():
+    return render_template("customer.html")
+
+# Rute til at vise Car-siden
+@api.route("/cars")
+def car_page():
+    return render_template("car.html")
+
+@api.route("/operations")
+def operations_page():
+    return render_template("operations.html")
+
 
 ###ORDER-CAR END-POINT###
 @api.route("/order-car/<int:customer_id>&<int:car_id>", methods=["POST"])

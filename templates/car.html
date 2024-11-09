@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Car Management</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Car Management</h1>
+        <div class="forms-container">
+            <!-- Create Car -->
+            <div class="form-wrapper">
+                <h2>Create Car</h2>
+                <form id="createCarForm">
+                    <label for="carMake">Make:</label>
+                    <input type="text" id="carMake" name="make" required>
+                    <label for="carModel">Model:</label>
+                    <input type="text" id="carModel" name="model" required>
+                    <label for="carYear">Year:</label>
+                    <input type="number" id="carYear" name="year" required>
+                    <label for="carLocation">Location:</label>
+                    <input type="text" id="carLocation" name="location" required>
+                    <label for="carStatus">Status:</label>
+                    <input type="text" id="carStatus" name="status" required>
+                    <label for="carId">ID:</label>
+                    <input type="number" id="carId" name="id" required>
+                    <button type="button" onclick="createCar()">Create Car</button>
+                </form>
+            </div>
+
+            <!-- Update Car -->
+            <div class="form-wrapper">
+                <h2>Update Car</h2>
+                <form id="updateCarForm">
+                    <label for="updateCarId">Car ID:</label>
+                    <input type="number" id="updateCarId" name="id" required>
+                    <label for="updateCarMake">Make:</label>
+                    <input type="text" id="updateCarMake" name="make">
+                    <label for="updateCarModel">Model:</label>
+                    <input type="text" id="updateCarModel" name="model">
+                    <label for="updateCarYear">Year:</label>
+                    <input type="number" id="updateCarYear" name="year">
+                    <label for="updateCarLocation">Location:</label>
+                    <input type="text" id="updateCarLocation" name="location">
+                    <label for="updateCarStatus">Status:</label>
+                    <input type="text" id="updateCarStatus" name="status">
+                    <button type="button" onclick="updateCar()">Update Car</button>
+                </form>
+            </div>
+
+            <!-- Delete Car -->
+            <div class="form-wrapper">
+                <h2>Delete Car</h2>
+                <form id="deleteCarForm">
+                    <label for="deleteCarId">Car ID:</label>
+                    <input type="number" id="deleteCarId" name="id" required>
+                    <button type="button" onclick="deleteCar()">Delete Car</button>
+                </form>
+            </div>
+
+            <!-- Display All Cars -->
+            <div class="form-wrapper">
+                <h2>Display All Cars</h2>
+                <button type="button" onclick="displayCars()">Display Cars</button>
+            </div>
+        </div>
+        <div id="response"></div>
+    </div>
+
+    <script>
+        // Function to create a Car
+        function createCar() {
+            const carMake = document.getElementById("carMake").value;
+            const carModel = document.getElementById("carModel").value;
+            const carYear = document.getElementById("carYear").value;
+            const carLocation = document.getElementById("carLocation").value;
+            const carStatus = document.getElementById("carStatus").value;
+            const carId = document.getElementById("carId").value;
+
+            fetch(`/car/create/${carMake}&${carModel}&${carYear}&${carLocation}&${carStatus}&${carId}`, {
+                method: "POST"
+            })
+            .then(response => response.text())
+            .then(data => document.getElementById("response").innerText = data)
+            .catch(error => document.getElementById("response").innerText = error);
+        }
+
+        // Function to update a Car
+        function updateCar() {
+            const carId = document.getElementById("updateCarId").value;
+            const carMake = document.getElementById("updateCarMake").value;
+            const carModel = document.getElementById("updateCarModel").value;
+            const carYear = document.getElementById("updateCarYear").value;
+            const carLocation = document.getElementById("updateCarLocation").value;
+            const carStatus = document.getElementById("updateCarStatus").value;
+
+            fetch(`/car/update/${carId}`, {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ make: carMake, model: carModel, year: carYear, location: carLocation, status: carStatus })
+            })
+            .then(response => response.text())
+            .then(data => document.getElementById("response").innerText = data)
+            .catch(error => document.getElementById("response").innerText = error);
+        }
+
+        // Function to delete a Car
+        function deleteCar() {
+            const carId = document.getElementById("deleteCarId").value;
+
+            fetch(`/car/delete/${carId}`, {
+                method: "DELETE"
+            })
+            .then(response => response.text())
+            .then(data => document.getElementById("response").innerText = data)
+            .catch(error => document.getElementById("response").innerText = error);
+        }
+
+        // Function to display all Cars
+        function displayCars() {
+            fetch(`/cars/`, {
+                method: "GET"
+            })
+            .then(response => response.json())
+            .then(data => {
+                let output = "<h3>Cars:</h3><ul>";
+                data.forEach(car => {
+                    output += `<li>ID: ${car.id}, Make: ${car.make}, Model: ${car.model}, Year: ${car.year}, Location: ${car.location}, Status: ${car.status}</li>`;
+                });
+                output += "</ul>";
+                document.getElementById("response").innerHTML = output;
+            })
+            .catch(error => document.getElementById("response").innerText = error);
+        }
+    </script>
+</body>
+</html>
