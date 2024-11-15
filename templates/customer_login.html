@@ -5,6 +5,44 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Customer Login</title>
     <link rel="stylesheet" href="/static/style.css">
+
+    <style>
+        /* Adjust container width and padding */
+        .container {
+            max-width: 400px; /* Smaller width for the login page */
+            padding: 20px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        /* Adjust heading size */
+        h1 {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        /* Smaller button for login and create account */
+        button {
+            width: calc(100% - 20px);
+            padding: 10px;
+            font-size: 16px;
+            color: #fff;
+            background-color: #4CAF50;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -15,14 +53,13 @@
             <label for="username">Username:</label>
             <input type="text" id="username" name="username" required>
             <label for="password">Password:</label>
-            <input type="text" id="password" name="password" required>
+            <input type="password" id="password" name="password" required> <!-- Changed type to 'password' -->
             <button type="button" onclick="loginCustomer()">Login</button>
         </form>
 
         <p>Don't have an account?</p>
         <button onclick="location.href='/customer_register'">Create Account</button>
 
-        <div id="response"></div>
     </div>
 
     <script>
@@ -37,7 +74,7 @@
             })
             .then(response => {
                 if (response.ok) {
-                    // Hvis login er succesfuldt, omdiriger til kunde-dashboardet
+                    // Redirect to customer page on successful login
                     window.location.href = "/customer_page";
                 } else {
                     return response.text().then(text => {

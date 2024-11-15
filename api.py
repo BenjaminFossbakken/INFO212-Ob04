@@ -4,6 +4,7 @@ from car_blueprint import car_bp
 from customer_blueprint import customer_bp
 from db import session
 
+###Efter at have givet den al min kode og hele set uppet, så har den ikke lavet css, kun lavet html for customer, og kun js for car.	
 api = Flask(__name__)
 
 # Registrer Blueprints

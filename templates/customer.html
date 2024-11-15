@@ -16,12 +16,19 @@
                 <form id="createCustomerForm">
                     <label for="customerName">Name:</label>
                     <input type="text" id="customerName" name="name" required>
-                    <label for="customerAge">Age:</label>
-                    <input type="number" id="customerAge" name="age" required>
+
+                    <label for="customerUsername">Username:</label>
+                    <input type="text" id="customerUsername" name="username" required>
+
+                    <label for="customerPassword">Password:</label>
+                    <input type="password" id="customerPassword" name="password" required>
+
                     <label for="customerAddress">Address:</label>
                     <input type="text" id="customerAddress" name="address" required>
-                    <label for="customerId">ID:</label>
-                    <input type="number" id="customerId" name="id" required>
+
+                    <label for="customerAge">Age:</label>
+                    <input type="number" id="customerAge" name="age" required>
+
                     <button type="button" onclick="createCustomer()">Create Customer</button>
                 </form>
             </div>
@@ -64,13 +71,16 @@
     <script>
         // Function to create a Customer
         function createCustomer() {
-            const custName = document.getElementById("custName").value;
-            const custId = document.getElementById("custId").value;
-            const custAge = document.getElementById("custAge").value;
-            const custAddress = document.getElementById("custAddress").value;
+            const name = document.getElementById("customerName").value;
+            const username = document.getElementById("customerUsername").value;
+            const password = document.getElementById("customerPassword").value;
+            const address = document.getElementById("customerAddress").value;
+            const age = document.getElementById("customerAge").value;
 
-            fetch(`/customer/create/${custName}&${custAge}&${custAddress}&${custId}`, {
-                method: "POST"
+            fetch('/customer_register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, username, password, address, age })
             })
             .then(response => response.text())
             .then(data => document.getElementById("response").innerText = data)

@@ -51,6 +51,18 @@ h2 {
     box-sizing: border-box;
     text-align: center;
 }
+input[type="text"],
+input[type="number"],
+input[type="password"],
+input[type="date"] {
+    width: calc(100% - 20px);
+    padding: 8px;
+    margin-top: 5px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
 
 /* Form styling */
 form label {

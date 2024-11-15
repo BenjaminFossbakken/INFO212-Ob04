@@ -5,6 +5,48 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Customer Dashboard</title>
     <link rel="stylesheet" href="/static/style.css">
+    <style>
+        /* Smaller container and form styling */
+        .container {
+            max-width: 600px; /* Smaller width for the dashboard */
+            padding: 20px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        /* Smaller form inputs */
+        input[type="text"],
+        input[type="date"] {
+            width: calc(100% - 20px);
+            padding: 6px;
+            margin-top: 5px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        /* Smaller button styling */
+        button {
+            width: calc(100% - 20px);
+            padding: 8px;
+            font-size: 14px;
+            color: #fff;
+            background-color: #4CAF50;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -28,10 +70,16 @@
 
     <script>
         function findAvailableCars() {
-            const location = document.getElementById("location").value;
+            const location = document.getElementById("location").value.trim();
             const date = document.getElementById("date").value;
+            const validLocations = ["Bergen", "Tromsø", "Oslo", "Stavanger"];
+            
+            // Check if location is valid or not; fetch all cars if not a valid location
+            const fetchUrl = validLocations.includes(location)
+                ? `/find_available_cars?location=${location}&date=${date}`
+                : `/find_available_cars?date=${date}`;
 
-            fetch(`/find_available_cars?location=${location}&date=${date}`)
+            fetch(fetchUrl)
                 .then(response => response.json())
                 .then(data => {
                     const carsContainer = document.getElementById("availableCars");
